@@ -27,7 +27,7 @@ export default function StudyPage() {
   const [schools, setSchools] = useState<School[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [pastPapers, setPastPapers] = useState<PastPaper[]>([]);
-  const [favorites, setFavorites] = useState<{document_id?: string, past_paper_id?: string}[]>([]);
+  const [_favorites, setFavorites] = useState<{document_id?: string, past_paper_id?: string}[]>([]);
   
   // Filtering & Metrics Sorting States
   const [searchTerm, setSearchTerm] = useState('');

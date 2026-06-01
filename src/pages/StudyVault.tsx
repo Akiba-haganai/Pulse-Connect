@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useAcademicVault } from '../hooks/useAcademicVault';
-import { BookOpen, FolderArchive, GraduationCap, Download, Search, PlusCircle, FileText, UploadCloud, Loader2 } from 'lucide-react';
+import { GraduationCap, Download, Search, PlusCircle, FileText, UploadCloud, Loader2 } from 'lucide-react';
 
 export default function StudyVault() {
   const { profile } = useAuthStore();
