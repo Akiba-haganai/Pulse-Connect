@@ -61,20 +61,40 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ session: data.session, user: data.user, profile: profileData, initialized: true });
   },
 
-  signUp: async (email, password, fullName, username) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
-          username: username.toLowerCase(),
-        }
+  // src/store/authStore.ts
+
+signUp: async (email, password, fullName, username) => {
+  // 1. Auth Signup
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: fullName,
+        username: username.toLowerCase(),
       }
-    });
-    if (error) throw error;
-    set({ session: data.session, user: data.user, initialized: true });
-  },
+    }
+  });
+  if (error) throw error;
+
+  // 2. IMPORTANT: Create the profile manually if no trigger exists
+  if (data.user) {
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert([{ 
+        id: data.user.id, 
+        username: username.toLowerCase(), 
+        full_name: fullName 
+      }]);
+
+    if (profileError) {
+      console.error("Profile creation failed:", profileError);
+      throw profileError; // This stops the "success" state
+    }
+  }
+
+  set({ session: data.session, user: data.user, initialized: true });
+},
 
   signOut: async () => {
     await supabase.auth.signOut();

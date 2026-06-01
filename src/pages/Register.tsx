@@ -20,41 +20,37 @@ export default function Register() {
     }
   }, [user, navigate]);
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Basic validation
-    if (!username.trim() || username.includes(' ')) {
-      toast.error('Username cannot contain spaces');
-      return;
-    }
+  // Replace your existing handleRegister in Register.tsx
+const handleRegister = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
 
-    setIsLoading(true);
-
-    // 1. Check if the username is already taken
+  try {
+    // 1. Username Check
     const { data: existingUser } = await supabase
       .from('profiles')
       .select('username')
-      .ilike('username', username) // case-insensitive check
+      .ilike('username', username)
       .maybeSingle();
 
     if (existingUser) {
       toast.error('That username is already taken!');
-      setIsLoading(false);
+      setIsLoading(false); // Manually stop loader
       return;
     }
 
-    // 2. If username is free, create the auth account
-    try {
-      await signUp(email, password, fullName, username);
-      toast.success('Account created successfully!');
-      navigate('/');
-    } catch (error: any) {
-      toast.error(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    // 2. Sign Up
+    await signUp(email, password, fullName, username);
+    
+    toast.success('Account created!');
+    navigate('/');
+  } catch (error: any) {
+    console.error("Signup error:", error); // Check console for the real error
+    toast.error(error.message || 'Registration failed');
+  } finally {
+    setIsLoading(false); // This ensures it NEVER stays stuck
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
