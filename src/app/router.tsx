@@ -11,7 +11,8 @@ import MarketplaceRedirect from "../pages/MarketplaceRedirect";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import MessagesPage from "../pages/messages/MessagesPage";
 import StudyVault from '../pages/StudyVault';
-import FlashcardHub from '../pages/FlashcardHub';// Adjust path as needed
+import FlashcardHub from '../pages/FlashcardHub';
+import MapPage from "../pages/MapPage"; // 🌟 Imported your new navigator page context
 
 export const router = createBrowserRouter([
   // Public auth routes — redirect to home if already logged in
@@ -59,7 +60,15 @@ export const router = createBrowserRouter([
       },
       {
         path: "marketplace",
-        element: <MarketplaceRedirect />,
+        element: <MarketplaceRedirect />, // Left in array for explicit redirect logic
+      },
+      {
+        path: "map", // 🌟 Secure protected access node matching bottom nav links
+        element: (
+          <ProtectedRoute>
+            <MapPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "profile",
@@ -92,10 +101,6 @@ export const router = createBrowserRouter([
             <FlashcardHub />
           </ProtectedRoute>
         ),
-      },
-      {
-        path: 'study', // '/study'
-        element: <FlashcardHub />
       },
     ],
   },

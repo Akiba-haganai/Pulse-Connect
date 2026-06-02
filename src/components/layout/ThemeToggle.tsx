@@ -1,51 +1,37 @@
+import React, { useEffect, useState } from 'react';
 import { Sun, Moon } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 export default function ThemeToggle() {
-  const [isDark, setIsDark] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  // safe hydration init
-  useEffect(() => {
-    const stored = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia(
-      '(prefers-color-scheme: dark)'
-    ).matches;
-
-    const initialDark = stored
-      ? stored === 'dark'
-      : prefersDark;
-
-    setIsDark(initialDark);
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return document.documentElement.classList.contains('dark') || 
+             localStorage.getItem('pulse_theme') === 'dark';
     }
-  }, [isDark, mounted]);
+    return true; // Default to dark mode for late-night campus utility
+  });
 
-  if (!mounted) {
-    return (
-      <div className="p-2 rounded-xl opacity-50">
-        <Moon size={20} />
-      </div>
-    );
-  }
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDark) {
+      root.classList.add('dark');
+      localStorage.setItem('pulse_theme', 'dark');
+    } else {
+      root.classList.remove('dark');
+      localStorage.setItem('pulse_theme', 'light');
+    }
+  }, [isDark]);
 
   return (
     <button
-      onClick={() => setIsDark((v) => !v)}
-      className="p-2 rounded-xl transition-all hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"
+      onClick={() => setIsDark(!isDark)}
+      className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-950 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-800 transition-all active:scale-95 shadow-sm"
+      aria-label="Toggle High Contrast Night Mode"
     >
-      {isDark ? <Sun size={20} /> : <Moon size={20} />}
+      {isDark ? (
+        <Sun size={15} className="text-amber-400 animate-pulse" />
+      ) : (
+        <Moon size={15} className="text-indigo-600" />
+      )}
     </button>
   );
 }

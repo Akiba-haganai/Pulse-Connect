@@ -1,12 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: 'class', // This forces Tailwind to look for the 'dark' class on the root element
+  darkMode: 'class', // 👈 This enables manual state triggers
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        'spin-slow': 'spin 8s linear infinite',
+      }
+    },
   },
   plugins: [],
 }
