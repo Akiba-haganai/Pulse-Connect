@@ -1,12 +1,18 @@
 import PWAInstallPrompt from '../components/PWAInstallPrompt';
 'use client';
 
+declare const process: {
+  env: {
+    NODE_ENV?: string;
+  };
+};
+
 import { useEffect } from 'react';
 
 export function ServiceWorkerRegister() {
   useEffect(() => {
     // Only register service workers within production browser spaces
-    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+    if ('serviceWorker' in navigator && typeof process !== 'undefined' && process.env.NODE_ENV === 'production') {
       window.addEventListener('load', () => {
         navigator.serviceWorker
           .register('/sw.js')

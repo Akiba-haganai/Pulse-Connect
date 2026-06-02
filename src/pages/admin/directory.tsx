@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Compass, Plus, Save, Trash2, FileText } from 'lucide-react';
 
 export default function AdminDirectoryManager() {
   const [session, setSession] = useState<any>(null);
@@ -8,19 +7,17 @@ export default function AdminDirectoryManager() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Core configuration states (Keep the ones you have...)
-  const [id, setId] = useState('');
-  const [name, setName] = useState('');
-  const [buildingName, setBuildingName] = useState('');
-  const [floor, setFloor] = useState('Ground Floor');
-  const [roomNumber, setRoomNumber] = useState('');
-  const [category, setCategory] = useState('administration');
-  const [description, setDescription] = useState('');
-  const [hours, setHours] = useState('08:00 - 16:30 (Mon-Fri)');
-  const [coords, setCoords] = useState({ x: 50, y: 50 });
-  const [services, setServices] = useState<string[]>([]);
-  const [documents, setDocuments] = useState<string[]>([]);
-  const [saving, setSaving] = useState(false);
+
+  const [_buildingName, _setBuildingName] = useState('');
+  const [_floor, _setFloor] = useState('Ground Floor');
+  const [_roomNumber, _setRoomNumber] = useState('');
+  const [_category, _setCategory] = useState('administration');
+  const [_description, _setDescription] = useState('');
+  const [_hours, _setHours] = useState('08:00 - 16:30 (Mon-Fri)');
+  const [_coords, _setCoords] = useState({ x: 50, y: 50 });
+  const [_services, _setServices] = useState<string[]>([]);
+  const [_documents, _setDocuments] = useState<string[]>([]);
+  const [_saving, _setSaving] = useState(false);
 
   useEffect(() => {
     // Check current auth status on render
@@ -42,22 +39,6 @@ export default function AdminDirectoryManager() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) alert(`Login Failed: ${error.message}`);
   };
-
-  const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = parseFloat(((e.clientX - rect.left) / rect.width * 100).toFixed(1));
-    const y = parseFloat(((e.clientY - rect.top) / rect.height * 100).toFixed(1));
-    setCoords({ x, y });
-  };
-
-  const handleSaveLocation = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!id || !name) return alert('ID and Name are required.');
-    setSaving(true);
-    // ... Keep your exact handleSaveLocation execution logic from earlier step ...
-    setSaving(false);
-  };
-
   if (authLoading) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">

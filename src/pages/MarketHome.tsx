@@ -1,6 +1,5 @@
-import React from 'react';
 import MarketWelcomeBanner from '../components/MarketWelcomeBanner';
-import MarketplaceFeed from '../components/MarketplaceFeed'; // Your main item grid file
+import MarketplaceFeed from '../components/MarketplaceFeed'; 
 
 export default function MarketHome() {
   return (
@@ -11,7 +10,8 @@ export default function MarketHome() {
 
       {/* 2. Heavy-duty Marketplace Transaction Grid */}
       <main className="px-4 py-2">
-         {/* Render search bars, filters, and product cards here */}
+         {/* You must render the component here to stop the "unused" error */}
+         <MarketplaceFeed /> 
       </main>
 
     </div>
