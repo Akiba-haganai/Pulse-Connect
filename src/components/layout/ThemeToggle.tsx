@@ -1,32 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
 
 export default function ThemeToggle() {
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('pulse_theme');
-      if (stored) return stored === 'dark';
-      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
-  });
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.add('dark');
-      localStorage.setItem('pulse_theme', 'dark');
-    } else {
-      root.classList.remove('dark');
-      localStorage.setItem('pulse_theme', 'light');
-    }
-  }, [isDark]);
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === 'dark';
 
   return (
     <button
-      onClick={() => setIsDark(!isDark)}
+      onClick={toggleTheme}
       className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-950 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-800 transition-all active:scale-95 shadow-sm"
-      aria-label="Toggle High Contrast Night Mode"
+      aria-label="Toggle Theme"
     >
       {isDark ? (
         <Sun size={15} className="text-amber-400 animate-pulse" />

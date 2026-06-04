@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
-import { MessageSquare, Send, Clock, Flame, Sun, Moon } from 'lucide-react';
+import { MessageSquare, Send, Clock, Flame } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { usePosts } from '../hooks/usePosts';
 import { usePostCooldown } from '../hooks/usePostCooldown';
@@ -77,34 +77,13 @@ export default function Home() {
     }
   };
   
-  // Dark mode state matching standard HTML root configurations
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return document.documentElement.classList.contains('dark') || 
-             localStorage.getItem('pulse-theme') === 'dark';
-    }
-    return false;
-  });
-
-  const { isThrottled, tokensRemaining, secondsLeft, maxTokens, refreshLimits } = usePostCooldown(user?.id);
-
-  // Sync theme changes with DOM node attributes
-  useEffect(() => {
-    const root = window.document.documentElement;
-    if (isDarkMode) {
-      root.classList.add('dark');
-      localStorage.setItem('pulse-theme', 'dark');
-    } else {
-      root.classList.remove('dark');
-      localStorage.setItem('pulse-theme', 'light');
-    }
-  }, [isDarkMode]);
-
   const toggleReplies = (postId: string) => {
     setExpandedPostIds(prev => 
       prev.includes(postId) ? prev.filter(id => id !== postId) : [...prev, postId]
     );
   };
+
+  const { isThrottled, tokensRemaining, secondsLeft, maxTokens, refreshLimits } = usePostCooldown(user?.id);
 
   const handlePost = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,14 +129,6 @@ export default function Home() {
         <h1 className="text-xl font-black tracking-tight bg-linear-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
           pulse
         </h1>
-        <button
-          type="button"
-          onClick={() => setIsDarkMode(!isDarkMode)}
-          className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-300 transition-all active:scale-95 shadow-2xs"
-          aria-label="Toggle Theme"
-        >
-          {isDarkMode ? <Sun size={14} /> : <Moon size={14} />}
-        </button>
       </div>
 
       {/* COMPOSER CARD */}

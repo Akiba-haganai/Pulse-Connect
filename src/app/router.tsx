@@ -14,6 +14,8 @@ import StudyVault from '../pages/StudyVault';
 import FlashcardHub from '../pages/FlashcardHub';
 import MapPage from "../pages/map/MapPage"; // 🌟 Imported your new navigator page context
 import AuthCallback from "../pages/AuthCallback";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import ProfessorDashboard from "../pages/ProfessorDashboard";
 
 export const router = createBrowserRouter([
   // Public auth routes — redirect to home if already logged in
@@ -110,10 +112,18 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "flashcard-hub",
+        path: "/pages/admin",
         element: (
           <ProtectedRoute>
-            <FlashcardHub />
+            <AdminDashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/professor",
+        element: (
+          <ProtectedRoute>
+            <ProfessorDashboard />
           </ProtectedRoute>
         ),
       },

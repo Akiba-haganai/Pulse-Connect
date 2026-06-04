@@ -103,17 +103,31 @@ export default function TopBar() {
                     Settings
                   </Link>
                 </DropdownMenuItem>
+
+                {profile?.role === "admin" && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin" className="flex gap-2 items-center">
+                      Admin Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+
+                {profile?.role === "professor" && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/professor" className="flex gap-2 items-center">
+                      Professor Tools
+                    </Link>
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuGroup>
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem
-                onClick={handleLogOut}
-                className="text-red-500"
-              >
+              <DropdownMenuItem onClick={handleLogOut} className="text-red-500 cursor-pointer">
                 <LogOut size={16} />
                 Logout
               </DropdownMenuItem>
+
             </DropdownMenuContent>
           </DropdownMenu>
 

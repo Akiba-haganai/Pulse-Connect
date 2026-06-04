@@ -10,7 +10,7 @@ const ThemeContext = createContext<{
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
-      return (localStorage.getItem('pulse-theme') as Theme) || 'light';
+      return (localStorage.getItem('pulse-theme') as Theme) || localStorage.getItem('pulse_theme') as Theme || 'light';
     }
     return 'light';
   });
