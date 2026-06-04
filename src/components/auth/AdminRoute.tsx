@@ -9,7 +9,6 @@ export default function AdminRoute({
   const profile = useAuthStore((s) => s.profile);
   const initialized = useAuthStore((s) => s.initialized);
 
-  // 1. Wait for Supabase to finish checking the session and profile
   if (!initialized) {
     return (
       <div className="h-[70vh] flex items-center justify-center text-indigo-600 font-medium">
@@ -18,11 +17,11 @@ export default function AdminRoute({
     );
   }
 
-  // 2. If they are not logged in OR their role is not 'admin', kick them to the home feed
-  if (!profile || profile.role !== "admin") {
+  if (!profile) return null;
+
+  if (profile.role !== "admin") {
     return <Navigate to="/" replace />;
   }
 
-  // 3. If they pass, render the admin page!
   return <>{children}</>;
 }

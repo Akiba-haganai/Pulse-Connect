@@ -4,6 +4,17 @@ import {
 } from 'lucide-react';
 import { useStudyHub } from '../hooks/useStudyHub';
 
+// ✅ FIX: Added proper Resource interface
+interface Resource {
+  id: string;
+  title: string;
+  course_code: string;
+  resource_type: string;
+  description?: string;
+  created_at: string;
+  file_url: string;
+}
+
 const RESOURCE_TYPES = [
   { id: 'all', label: 'All Files', icon: BookOpen },
   { id: 'notes', label: 'Lecture Notes', icon: FileText },
@@ -17,7 +28,7 @@ export default function StudyHub() {
   const [activeType, setActiveType] = useState('all');
   const [showUploadModal, setShowUploadModal] = useState(false);
 
-  const { resources, loading, uploadResource } = useStudyHub(selectedCourse);
+  const { resources, loading, uploadResource, trackDownload } = useStudyHub(selectedCourse);
 
   const [uploadTitle, setUploadTitle] = useState('');
   const [uploadCode, setUploadCode] = useState('');
@@ -26,14 +37,28 @@ export default function StudyHub() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const filteredResources = useMemo(() => {
-    return resources.filter(res => {
+  // ✅ FIX: Added proper typing for filteredResources
+  const filteredResources = useMemo((): Resource[] => {
+    return resources.filter((res: Resource) => {
       const queryMatch = res.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          res.course_code?.toLowerCase().includes(searchQuery.toLowerCase());
       const typeMatch = activeType === 'all' || res.resource_type === activeType;
       return queryMatch && typeMatch;
     });
   }, [resources, searchQuery, activeType]);
+
+  // ✅ FIX: Added download handler with analytics tracking
+  const handleDownload = async (id: string, fileUrl: string) => {
+    try {
+      if (trackDownload) {
+        await trackDownload(id);
+      }
+      window.open(fileUrl, '_blank');
+    } catch (error) {
+      console.error('Download tracking failed:', error);
+      window.open(fileUrl, '_blank');
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -66,7 +91,6 @@ export default function StudyHub() {
   };
 
   return (
-    // 🛠️ FIX: Shifted system wrappers to pure black backing arrays to prevent night-reading flash delays
     <div className="flex flex-col h-[calc(100vh-4rem)] max-w-md mx-auto bg-white dark:bg-black font-sans relative overflow-hidden">
       
       {/* CONTROL CONTAINER */}
@@ -156,15 +180,14 @@ export default function StudyHub() {
                 </p>
               </div>
 
-              <a 
-                href={res.file_url} 
-                target="_blank" 
-                rel="noreferrer"
+              {/* ✅ FIX: Replaced direct href with onClick handler for download tracking */}
+              <button
+                onClick={() => handleDownload(res.id, res.file_url)}
                 aria-label={`Download ${res.title}`}
-                className="p-2.5 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-900 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl transition-all"
+                className="p-2.5 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-900 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl transition-all cursor-pointer"
               >
                 <Download size={13} />
-              </a>
+              </button>
             </div>
           ))
         )}

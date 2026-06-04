@@ -8,21 +8,22 @@ export default function ProtectedRoute({
 }) {
   const user = useAuthStore((s) => s.user);
   const initialized = useAuthStore((s) => s.initialized);
+  const isLoading = useAuthStore((s) => s.isLoading);
 
-  // If Supabase hasn't finished checking the local session yet, show a loader
-  if (!initialized) {
+  // 🔒 BLOCK RENDER UNTIL AUTH IS FULLY READY
+  if (!initialized || isLoading) {
     return (
-      <div className="h-[70vh] flex items-center justify-center text-indigo-600 font-medium">
-        Loading...
+      <div className="h-[70vh] flex items-center justify-center text-indigo-600 text-sm">
+        Loading session...
       </div>
     );
   }
 
-  // If they are done loading but have no active user session, boot them to login
+  // 🚫 NOT LOGGED IN → REDIRECT
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // If they pass both checks, render the protected page!
+  // ✅ AUTH SAFE
   return <>{children}</>;
 }

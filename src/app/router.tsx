@@ -4,7 +4,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Home from "../pages/Home";
 import DiscoveryPage from '../pages/discovery/DiscoveryPage';
-import Announcements from "../pages/Announcements";
+import CampusFeed from "../pages/CampusFeed";
 import ProfilePage from '../pages/profile/ProfilePage';
 import StudyPage from "../pages/StudyPage";
 import MarketplaceRedirect from "../pages/MarketplaceRedirect";
@@ -12,7 +12,8 @@ import ProtectedRoute from "../components/auth/ProtectedRoute";
 import MessagesPage from "../pages/messages/MessagesPage";
 import StudyVault from '../pages/StudyVault';
 import FlashcardHub from '../pages/FlashcardHub';
-import MapPage from "../pages/MapPage"; // 🌟 Imported your new navigator page context
+import MapPage from "../pages/map/MapPage"; // 🌟 Imported your new navigator page context
+import AuthCallback from "../pages/AuthCallback";
 
 export const router = createBrowserRouter([
   // Public auth routes — redirect to home if already logged in
@@ -43,10 +44,18 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "messages/:roomId",
+        element: (
+          <ProtectedRoute>
+            <MessagesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "announcements",
         element: (
           <ProtectedRoute>
-            <Announcements />
+            <CampusFeed />
           </ProtectedRoute>
         ),
       },
@@ -77,6 +86,12 @@ export const router = createBrowserRouter([
             <ProfilePage />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "/auth/callback",
+         element: (
+            <AuthCallback />
+        )
       },
       {
         path: "discovery",

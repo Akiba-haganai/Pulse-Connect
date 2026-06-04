@@ -4,10 +4,11 @@ import { Sun, Moon } from 'lucide-react';
 export default function ThemeToggle() {
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
-      return document.documentElement.classList.contains('dark') || 
-             localStorage.getItem('pulse_theme') === 'dark';
+      const stored = localStorage.getItem('pulse_theme');
+      if (stored) return stored === 'dark';
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
-    return true; // Default to dark mode for late-night campus utility
+    return false;
   });
 
   useEffect(() => {

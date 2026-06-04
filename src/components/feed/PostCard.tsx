@@ -2,8 +2,8 @@ interface PostCardProps {
   post: {
     id: string;
     content: string;
-    created_at: string;
-    profiles: { full_name: string; avatar_url: string | null };
+    created_at: string;    
+    profiles: { full_name: string; avatar_url: string | null } | null;
   };
 }
 
@@ -26,10 +26,10 @@ export function PostCard({ post }: PostCardProps) {
     <div className="bg-white rounded-xl shadow-sm p-4 space-y-2">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold">
-          {post.profiles.full_name?.charAt(0) || "U"}
+          {post.profiles?.full_name?.charAt(0) || "Unknown User"}
         </div>
         <div>
-          <p className="font-semibold">{post.profiles.full_name}</p>
+          <p className="font-semibold">{post.profiles?.full_name || "Unknown User"}</p>
           <p className="text-xs text-gray-500">
             {formatRelativeTime(new Date(post.created_at))}
           </p>

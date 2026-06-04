@@ -3,16 +3,23 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 
 import { router } from "./app/router";
-import AuthProvider from "./app/providers/AuthProvider";
+import { useAuthStore } from "./store/authStore";
+import 'leaflet/dist/leaflet.css';
 
 import "./styles/globals.css";
 
-ReactDOM.createRoot(
-document.getElementById("root")!
-).render(
-<React.StrictMode>
-  <AuthProvider>
-    <RouterProvider router={router} />
-  </AuthProvider>
-</React.StrictMode>
+function Bootstrap() {
+  const initialize = useAuthStore((s) => s.initialize);
+
+  React.useEffect(() => {
+    initialize();
+  }, []);
+
+  return <RouterProvider router={router} />;
+}
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <Bootstrap />
+  </React.StrictMode>
 );

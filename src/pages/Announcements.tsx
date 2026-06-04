@@ -15,7 +15,7 @@ export default function Announcements() {
   const [isPosting, setIsPosting] = useState(false);
 
   // 🌟 PERMISSION UPGRADE: Both administrators and verified professors can broadcast notices
-  const hasPostingPrivileges = profile?.role === 'admin' || profile?.role === 'professor';
+  const hasPostingPrivileges = profile?.role === 'admin' || profile?.role === 'moderator';
 
   const fetchAnnouncements = async () => {
     try {

@@ -15,6 +15,21 @@
 
     <link rel="apple-touch-icon" href="/icon-192.png">
     <link rel="manifest" href="/manifest.webmanifest" />
+    <script>
+      (function () {
+        try {
+          const stored = localStorage.getItem('pulse_theme');
+          const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (stored === 'dark' || (!stored && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {
+          // ignore errors accessing localStorage
+        }
+      })();
+    </script>
   </head>
   <body class="bg-gray-50/50 text-gray-900 antialiased">
     <div id="root"></div>

@@ -1,65 +1,99 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-
-export type Post = {
-  id: string;
-  content: string;
-  created_at: string;
-  user_id: string;
-  parent_id?: string | null; // TypeScript now explicitly recognizes this column layout!
-  profiles?: {
-    username: string | null;
-    avatar_url: string | null;
-    full_name: string | null;
-  } | null;
-};
+import type { Post } from "../types/post";
 
 export function usePosts() {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchPosts = async () => {
-    // Grabbing all core columns via '*' automatically includes parent_id,
-    // plus the joined relation object mappings for user profiles
-    const { data, error } = await supabase
-      .from("posts")
-      .select(`
-        *,
-        profiles (username, avatar_url, full_name)
-      `)
-      .order("created_at", { ascending: false });
+  const fetchPosts = useCallback(async () => {
+    setIsLoading(true);
 
-    if (error) {
-      console.error("Failed syncing global stream arrays:", error);
-      return;
+    try {
+      // Fetch posts without join first
+      const { data: postsData, error: postsError } = await supabase
+        .from("posts")
+        .select("id, user_id, content, created_at, parent_id")
+        .order("created_at", { ascending: false });
+
+      if (postsError) throw postsError;
+
+      console.log("Posts fetched successfully:", postsData);
+
+      // Fetch unique user profiles
+      if (postsData && postsData.length > 0) {
+        const userIds = [...new Set(postsData.map((p: any) => p.user_id))];
+        const { data: profilesData, error: profilesError } = await supabase
+          .from("profiles")
+          .select("id, username, full_name, avatar_url")
+          .in("id", userIds);
+
+        if (profilesError) throw profilesError;
+
+        // Create a map of user_id -> profile
+        const profileMap: Record<string, any> = {};
+        (profilesData ?? []).forEach((profile: any) => {
+          profileMap[profile.id] = profile;
+        });
+
+        // Attach profiles to posts
+        const normalized = (postsData ?? []).map((post: any) => ({
+          ...post,
+          profiles: profileMap[post.user_id] ?? null,
+        }));
+
+        console.log("Normalized posts:", normalized);
+        setPosts(normalized);
+      } else {
+        setPosts([]);
+      }
+      setError(null);
+    } catch (error) {
+      console.error("Failed to load posts:", error);
+      let errorMsg = "Unknown error";
+      if (error instanceof Error) {
+        errorMsg = error.message;
+      } else if (typeof error === "object" && error !== null) {
+        errorMsg = JSON.stringify(error);
+      } else {
+        errorMsg = String(error);
+      }
+      console.error("Error details:", errorMsg);
+      setError(errorMsg);
+      setPosts([]);
+    } finally {
+      setIsLoading(false);
     }
-
-    if (data) {
-      setPosts(data as unknown as Post[]);
-    }
-  };
+  }, []);
 
   useEffect(() => {
-    // 1. Fetch initial posts on load
     fetchPosts();
 
-    // 2. Subscribe to REALTIME database changes
-    const subscription = supabase
-      .channel('public:posts')
+    const channel = supabase
+      .channel("posts-feed")
       .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'posts' },
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "posts",
+        },
         () => {
-          // Whenever a new post is inserted into the DB, refresh the feed!
           fetchPosts();
         }
       )
       .subscribe();
 
-    // 3. Cleanup the subscription when the user leaves the page
     return () => {
-      supabase.removeChannel(subscription);
+      supabase.removeChannel(channel);
     };
-  }, []);
+  }, [fetchPosts]);
 
-  return { posts, setPosts, refresh: fetchPosts };
+  return {
+    posts,
+    isLoading,
+    error,
+    refresh: fetchPosts,
+  };
 }

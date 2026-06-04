@@ -1,16 +1,23 @@
+import { Outlet } from "react-router-dom";
 import TopBar from "./TopBar";
 import BottomNav from "./BottomNav";
-import { Outlet } from "react-router-dom";
 
 export default function AppLayout() {
+  
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
+    <div className="min-h-screen bg-gray-50 dark:bg-black flex flex-col">
+      
+      {/* 🧠 TOP BAR (GLOBAL SHELL AREA) */}
       <TopBar />
 
-      <main className="flex-1 pb-16 pt-2">
-        <Outlet />
+      {/* 📦 MAIN CONTENT AREA (IMPORTANT: SINGLE SCROLL CONTAINER) */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="max-w-md mx-auto w-full px-2 py-4">
+          <Outlet />
+        </div>
       </main>
 
+      {/* 📱 BOTTOM NAV (GLOBAL FIXED SHELL ELEMENT) */}
       <BottomNav />
     </div>
   );

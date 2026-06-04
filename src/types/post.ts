@@ -3,7 +3,7 @@ export interface Post {
   user_id: string;
   content: string;
   created_at: string;
-  parent_id?: string | null; // 🌟 ADD THIS LINE HERE
+  parent_id?: string | null;
   profiles?: {
     username: string;
     full_name: string;
